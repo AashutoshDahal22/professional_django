@@ -8,7 +8,7 @@ from . import views
 
 urlpatterns=[
 
-    path("/house",views.home,name="home"),
+    path("",views.home,name="home"),
     
     path("welcome/",views.welcome), #map
     
@@ -16,16 +16,18 @@ urlpatterns=[
     
     path("contact/",views.contact),
     
-    #dynamic urls
-    path("student/<int:id>/",views.student),
+    path("student/",views.student)
     
-    #dynamic urls with multiple parameters or parameter url
-    path("student-info/<int:id>/<str:name>/",views.student_info),
+    # #dynamic urls
+    # path("student/<int:id>/",views.student),
     
-    path("search/", views.search),
+    # #dynamic urls with multiple parameters or parameter url
+    # path("student-info/<int:id>/<str:name>/",views.student_info),
     
-    path("login/",views.login),
+    # path("search/", views.search),
     
-    path("login-class",views.LoginView.as_view(),name="login-class")
+    # path("login/",views.login),
+    
+    # path("login-class",views.LoginView.as_view(),name="login-class")
     
 ]

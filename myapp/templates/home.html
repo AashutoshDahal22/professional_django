@@ -1,12 +1,15 @@
-<!doctype html>
-<html>
-  <head>
-    <title>StudentHub</title>
-  </head>
+{% extends "base.html" %} {% block title %} Home {% endblock %} {% block content%}
 
-  <body>
-    <h1>Welcome Students</h1>
+<h1>Welcome {{ name }}</h1>
 
-    <p>This page is coming from a template.</p>
-  </body>
-</html>
+<p class="lead">This website is built using Django Templates.</p>
+
+{% if logged_in %}
+
+<div class="alert alert-success">You are successfully logged in.</div>
+
+{% else %}
+
+<div class="alert alert-warning">Please login first.</div>
+
+{% endif %} {% endblock %}
