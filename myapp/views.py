@@ -10,7 +10,6 @@ def welcome(request):
 def home(request):
     #to disply only one student data
     data=Students.objects.get(id=1)
-    
     return render(request,"home.html",{"students":data})
 
 def home_with_dynamicURL(request,id):    
@@ -26,7 +25,7 @@ def about(request):
 def contact(request):
     if request.method == "POST":
 
-        Contact.objects.create(
+        Contact.objects.create( #using ORM
             name=request.POST["name"],
             email=request.POST["email"],
             message=request.POST["message"]
@@ -38,7 +37,7 @@ def contact(request):
 
 def student(request):
 
-    data=Students.objects.all()
+    data=Students.objects.all() #fetches all students
 
     return render(request, "students.html", {
         "students": data
