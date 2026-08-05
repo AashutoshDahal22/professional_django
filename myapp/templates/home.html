@@ -1,10 +1,15 @@
-{% extends "base.html" %} {% block title %} Home {% endblock %} {% block content%}
+{% extends "base.html" %} {% block title %} Home {% endblock %} {% block content%} 
 
-<h1>Welcome {{ name }}</h1>
+<h1>Welcome {{ students.name|upper }}</h1>
+<h2>Age: {{ students.age }}</h2>
+<h2>Email: {{ students.email }}</h2>
+<h2>Phone: {{ students.phone }}</h2>
+<h2>Course: {{ students.course|upper }}</h2>
+
 
 <p class="lead">This website is built using Django Templates.</p>
 
-{% if logged_in %}
+<!-- {% if logged_in %}
 
 <div class="alert alert-success">You are successfully logged in.</div>
 
@@ -12,4 +17,5 @@
 
 <div class="alert alert-warning">Please login first.</div>
 
-{% endif %} {% endblock %}
+{% endif %}  -->
+{% endblock %}
