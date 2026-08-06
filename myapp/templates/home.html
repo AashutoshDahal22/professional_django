@@ -1,11 +1,10 @@
-{% extends "base.html" %} {% block title %} Home {% endblock %} {% block content%} 
+{% extends "base.html" %} {% block title %} Home {% endblock %} {% block content%}
 
 <h1>Welcome {{ students.name|upper }}</h1>
 <h2>Age: {{ students.age }}</h2>
 <h2>Email: {{ students.email }}</h2>
 <h2>Phone: {{ students.phone }}</h2>
-<h2>Course: {{ students.course|upper }}</h2>
-
+<h2>Course: {{ students.course.name|upper }}</h2>
 
 <p class="lead">This website is built using Django Templates.</p>
 

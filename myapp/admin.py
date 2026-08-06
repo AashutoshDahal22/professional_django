@@ -1,10 +1,15 @@
 from django.contrib import admin
 
-from .models import Students
+from .models import Course, Students
 
 # Most of us already have registered the models so for them just use decorators like @admin.register(ModelName)
 
 # TODO: Let's add list_display , search fields and filter fields in our admin models
+
+
+@admin.register(Course)
+class CourseAdmin(admin.ModelAdmin):
+    list_display = ("id", "name")
 
 
 @admin.register(Students)
