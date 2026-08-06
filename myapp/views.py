@@ -1,5 +1,5 @@
 from django.shortcuts import render,redirect
-from .models import Students
+from .models import Students,Contact
 from .forms import ContactForm
 
 # Create your views here.
@@ -30,9 +30,19 @@ def contact(request):
         form = ContactForm(request.POST)
 
         if form.is_valid():
+            
+            #if not using model forms
+            # Contact.objects.create(
+            #     name=form.cleaned_data["name"],
+            #     email=form.cleaned_data["email"],
+            #     age=form.cleaned_data["age"],
+            #     subject=form.cleaned_data["subject"],
+            #     message=form.cleaned_data["message"],
+            # )
 
-            print(form.cleaned_data)
-
+            #if using model forms
+            form.save()
+            
             return render(
                 request,
                 "contact.html",
