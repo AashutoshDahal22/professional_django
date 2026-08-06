@@ -1,4 +1,5 @@
 from django import forms
+
 # from django.core.validators import (
 #     MinLengthValidator,
 #     MaxLengthValidator,
@@ -79,7 +80,8 @@ from .models import Contact
 
 #         return cleaned_data
 
+
 class ContactForm(forms.ModelForm):
     class Meta:
         model = Contact
-        fields = ["name", "email", "age", "subject", "message"]
+        fields = ("name", "email", "age", "subject", "message")
