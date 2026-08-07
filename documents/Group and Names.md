@@ -12,7 +12,6 @@ Group 2
 - Surakhshya
 
 Group 3
-- Samjhana
 - Binisha
 - Sneha
 - Swornim
@@ -48,8 +47,9 @@ Group 8
 - Badri
 
 Group 9
+- Sanjana
 - Biraj
-- Anim
+- Anil
 
 Group 10
 - Sushant

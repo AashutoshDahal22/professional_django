@@ -6,6 +6,8 @@ from .models import Course, Students
 
 # TODO: Let's add list_display , search fields and filter fields in our admin models
 
+# admin.site.register(Students)
+
 
 @admin.register(Course)
 class CourseAdmin(admin.ModelAdmin):
