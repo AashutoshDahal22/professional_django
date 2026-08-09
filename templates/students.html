@@ -20,6 +20,14 @@
       <td>{{ student.name }}</td>
       <td>{{ student.age }}</td>
       <td>{{ student.course|upper }}</td>
+
+      {% if student.image %}
+      <img
+        src="{{ student.image.url }}"
+        alt="Attachment from {{ student.name }}"
+        width="300"
+      />
+      {% endif %}
     </tr>
 
     {% empty %}

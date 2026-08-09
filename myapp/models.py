@@ -32,6 +32,12 @@ class Contact(models.Model):
     age = models.IntegerField()
     subject = models.CharField(max_length=150)
     message = models.TextField()
+    
+    image = models.ImageField(
+        upload_to="contacts/",
+        blank=True,
+        null=True
+    )
 
     # this make sure that in the admin panel we don't see object instead it returns the actual name of the user
 

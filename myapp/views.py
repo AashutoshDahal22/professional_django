@@ -2,7 +2,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 
 from .forms import ContactForm
-from .models import Students
+from .models import Students,Contact
 
 # Create your views here.
 
@@ -30,7 +30,7 @@ def about(request):
 def contact(request):
 
     if request.method == "POST":
-        form = ContactForm(request.POST)
+        form = ContactForm(request.POST, request.FILES)
 
         if form.is_valid():
             # if not using model forms
@@ -60,7 +60,7 @@ def student(request):
 
     # Normal query
     # Fetches students first.
-    students = Students.objects.all()
+    students = Contact.objects.all()
 
     # select_related()
     # Suitable for ForeignKey relationships.
