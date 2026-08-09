@@ -1,0 +1,1158 @@
+# Class 7 — Authentication & Authorization
+
+## 1. Authentication vs Authorization
+
+Authentication and authorization are two different security concepts.
+
+### Authentication
+
+**Authentication** means verifying **who the user is**.
+
+It answers:
+
+> "Are you really the user you claim to be?"
+
+For example, when a user enters:
+
+```text
+Username: ram
+Password: ********
+```
+
+Django checks whether those credentials belong to a valid user.
+
+If they are correct, Django authenticates the user.
+
+### Authorization
+
+**Authorization** means determining **what an authenticated user is allowed to do**.
+
+It answers:
+
+> "What is this user allowed to access?"
+
+For example:
+
+```text
+Student → Can view their profile
+Teacher → Can manage students
+Staff → Can access admin site
+Superuser → Has all permissions
+```
+
+### Difference
+
+| Authentication               | Authorization                     |
+| ---------------------------- | --------------------------------- |
+| Who are you?                 | What can you do?                  |
+| Verifies identity            | Checks permissions                |
+| Uses username/password       | Uses permissions, groups, roles   |
+| Happens before authorization | Requires an authenticated user    |
+| Example: Login               | Example: Access Teacher Dashboard |
+
+### Simple example
+
+```text
+User enters username/password
+            ↓
+       Authentication
+            ↓
+       User identified
+            ↓
+       Authorization
+            ↓
+ What is this user allowed to access?
+```
+
+---
+
+# 2. Django User Model
+
+Django provides a built-in authentication system.
+
+One of its most important components is the built-in `User` model.
+
+It is available through:
+
+```python
+from django.contrib.auth.models import User
+```
+
+The User model stores information about users.
+
+### Common User fields
+
+| Field              | Purpose                                     |
+| ------------------ | ------------------------------------------- |
+| `username`         | Unique username used for login              |
+| `password`         | Hashed password                             |
+| `email`            | User's email address                        |
+| `first_name`       | First name                                  |
+| `last_name`        | Last name                                   |
+| `is_active`        | Whether the account is active               |
+| `is_staff`         | Whether the user can access Django Admin    |
+| `is_superuser`     | Whether the user has all permissions        |
+| `groups`           | Groups assigned to the user                 |
+| `user_permissions` | Individual permissions assigned to the user |
+
+### Example
+
+A user might look conceptually like:
+
+```text
+User
+├── username: ram
+├── email: ram@gmail.com
+├── password: hashed password
+├── is_active: True
+├── is_staff: False
+├── is_superuser: False
+├── groups: Teacher
+└── permissions: ...
+```
+
+Django handles the underlying database storage and authentication functionality.
+
+---
+
+# 3. User Registration
+
+**User registration** is the process of creating a new user account.
+
+Django provides:
+
+```python
+UserCreationForm
+```
+
+which is a built-in form for creating users.
+
+It handles important functionality such as:
+
+* Username
+* Password
+* Password confirmation
+* Password validation
+* Password hashing when the user is saved
+
+A custom registration form can extend the built-in form.
+
+For example:
+
+```python
+class RegisterForm(UserCreationForm):
+    email = forms.EmailField(required=True)
+```
+
+This means:
+
+> Use Django's existing user registration functionality and add an email field.
+
+### Typical registration flow
+
+```text
+Registration form
+       ↓
+User submits data
+       ↓
+Form validation
+       ↓
+Create User
+       ↓
+Hash password
+       ↓
+Save User to database
+       ↓
+Account created
+```
+
+### Important
+
+A newly registered user does **not automatically become**:
+
+* Staff
+* Superuser
+* Teacher
+* Administrator
+
+Unless your application explicitly assigns those roles.
+
+---
+
+# 4. Login
+
+**Login** is the process of authenticating an existing user.
+
+Django provides authentication functions such as:
+
+```python
+authenticate()
+```
+
+and:
+
+```python
+login()
+```
+
+### `authenticate()`
+
+It verifies the user's credentials.
+
+Conceptually:
+
+```text
+Username + Password
+        ↓
+   authenticate()
+        ↓
+Valid user?
+   ↓         ↓
+ Yes        No
+ ↓           ↓
+User       None
+```
+
+If authentication succeeds, Django returns the user object.
+
+If it fails, it returns:
+
+```python
+None
+```
+
+### `login()`
+
+After authentication succeeds:
+
+```python
+login(request, user)
+```
+
+logs the user into the current session.
+
+The user can then access pages that require authentication.
+
+---
+
+# 5. Logout
+
+**Logout** ends the user's authenticated session.
+
+Django provides:
+
+```python
+logout()
+```
+
+Example:
+
+```python
+logout(request)
+```
+
+After logout, the user is no longer authenticated.
+
+Conceptually:
+
+```text
+Logged-in user
+      ↓
+   logout()
+      ↓
+Session authentication removed
+      ↓
+User logged out
+```
+
+A common flow is:
+
+```text
+Login
+  ↓
+Authenticated session
+  ↓
+Use website
+  ↓
+Logout
+  ↓
+Unauthenticated
+```
+
+---
+
+# 6. Password Hashing
+
+Django does **not store user passwords as plain text**.
+
+This is extremely important for security.
+
+Suppose a user enters:
+
+```text
+mypassword123
+```
+
+Django does not simply store:
+
+```text
+mypassword123
+```
+
+Instead, Django uses a password hashing algorithm and stores a **password hash**.
+
+Conceptually:
+
+```text
+Plain password
+      ↓
+Password hashing algorithm
+      ↓
+Password hash
+      ↓
+Database
+```
+
+### Why hash passwords?
+
+If the database is compromised, storing plain-text passwords would expose everyone's actual passwords.
+
+With hashing, the database stores a transformed representation instead.
+
+### Password verification
+
+When a user logs in:
+
+```text
+User enters password
+        ↓
+Django checks password
+        ↓
+Compare against stored hash
+        ↓
+Correct?
+   ↓          ↓
+  Yes         No
+   ↓           ↓
+Login        Reject
+```
+
+### Important distinction
+
+Password hashing is different from encryption.
+
+**Hashing:**
+
+```text
+Password → Hash
+```
+
+A hash is designed to be one-way.
+
+**Encryption:**
+
+```text
+Data → Encrypted data → Decrypted data
+```
+
+Encryption is designed so the original data can be recovered using a key.
+
+---
+
+# 7. Sessions
+
+A **session** allows Django to remember that a user has authenticated across multiple HTTP requests.
+
+HTTP itself is stateless.
+
+For example:
+
+```text
+Request 1 → Login
+Request 2 → Home
+Request 3 → Student
+Request 4 → Profile
+```
+
+Without a session, Django would not automatically know that all four requests came from the authenticated user.
+
+### Django session flow
+
+```text
+User logs in
+      ↓
+Django authenticates user
+      ↓
+login(request, user)
+      ↓
+Django creates/updates session
+      ↓
+Browser receives session information
+      ↓
+Browser sends it with future requests
+      ↓
+Django identifies the user
+```
+
+This allows Django to provide:
+
+```python
+request.user
+```
+
+on later requests.
+
+For example:
+
+```python
+request.user.username
+```
+
+can identify the currently authenticated user.
+
+---
+
+# 8. Authentication Middleware
+
+Django uses middleware to process HTTP requests before they reach the view.
+
+One important middleware for authentication is:
+
+```python
+'django.contrib.auth.middleware.AuthenticationMiddleware'
+```
+
+It works together with Django's session system.
+
+### What does it do?
+
+It makes the authenticated user available through:
+
+```python
+request.user
+```
+
+For example:
+
+```python
+def profile(request):
+    print(request.user)
+```
+
+If the user is logged in, Django can identify them.
+
+If the user is not logged in, Django provides an anonymous user.
+
+### Conceptual flow
+
+```text
+Browser
+   ↓
+HTTP Request
+   ↓
+Session Middleware
+   ↓
+Authentication Middleware
+   ↓
+request.user
+   ↓
+View
+```
+
+This is why we can write:
+
+```python
+request.user.is_authenticated
+```
+
+inside a view.
+
+---
+
+# 9. `login_required`
+
+Django provides the `login_required` decorator to protect views.
+
+Example:
+
+```python
+from django.contrib.auth.decorators import login_required
+
+
+@login_required
+def profile(request):
+    ...
+```
+
+This means:
+
+> The user must be authenticated before accessing this view.
+
+### If the user is logged in
+
+```text
+Request
+  ↓
+@login_required
+  ↓
+Authenticated?
+  ↓
+YES
+  ↓
+View executes
+```
+
+### If the user is not logged in
+
+```text
+Request
+  ↓
+@login_required
+  ↓
+Authenticated?
+  ↓
+NO
+  ↓
+Redirect to login
+```
+
+### Authentication vs authorization example
+
+```python
+@login_required
+def teacher_dashboard(request):
+    ...
+```
+
+This only checks:
+
+> Is the user logged in?
+
+It does **not** check:
+
+> Is the user a Teacher?
+
+For that, another authorization check is needed.
+
+---
+
+# 10. User Permissions
+
+A **permission** defines a specific action that a user is allowed to perform.
+
+For example:
+
+```text
+Can view student
+Can add student
+Can change student
+Can delete student
+```
+
+Django automatically creates model permissions for models.
+
+For a model such as:
+
+```python
+class Student(models.Model):
+    ...
+```
+
+Django can create permissions such as:
+
+```text
+add_student
+change_student
+delete_student
+view_student
+```
+
+### Permissions answer:
+
+> "What action can this user perform?"
+
+For example:
+
+```text
+User
+  ↓
+Can view Student?
+  ↓
+Yes
+```
+
+or:
+
+```text
+User
+  ↓
+Can delete Student?
+  ↓
+No
+```
+
+---
+
+# 11. Groups
+
+A **Group** is a collection of users and permissions.
+
+Groups are useful for implementing roles.
+
+For example:
+
+```text
+Teacher Group
+├── View Student
+├── Add Student
+└── Change Student
+```
+
+Then instead of assigning these permissions to every teacher individually, we assign them to the `Teacher` group.
+
+Users can then be added to the group.
+
+### Example
+
+```text
+Teacher Group
+      │
+      ├── View Student
+      ├── Add Student
+      └── Change Student
+             │
+             ↓
+        User: Ram
+```
+
+Ram receives the permissions through the group.
+
+### Group-based role system
+
+```text
+User
+ ↓
+Teacher Group
+ ↓
+Teacher permissions
+ ↓
+Teacher functionality
+```
+
+This is one of the simplest ways to implement role-based access control in Django.
+
+---
+
+# 12. Staff Users
+
+Django's User model contains:
+
+```python
+is_staff
+```
+
+A staff user is allowed to access the Django Admin site, provided the account is active and otherwise valid.
+
+For example:
+
+```python
+user.is_staff
+```
+
+returns:
+
+```text
+True
+```
+
+for a staff user.
+
+### Important distinction
+
+Being a staff user does **not automatically mean** the user is a superuser.
+
+You can have:
+
+```text
+is_staff = True
+is_superuser = False
+```
+
+Such a user can access the admin interface but does not automatically have every permission.
+
+Their actual permissions determine what they can do in the admin.
+
+---
+
+# 13. Superusers
+
+A **superuser** is a user with all permissions.
+
+A superuser normally has:
+
+```text
+is_staff = True
+is_superuser = True
+```
+
+Superusers are intended for administrative control of the Django application.
+
+They can generally perform actions that require permissions because the superuser status bypasses normal permission restrictions.
+
+### Creating a superuser
+
+Django provides:
+
+```bash
+python manage.py createsuperuser
+```
+
+The command asks for information such as:
+
+```text
+Username
+Email
+Password
+```
+
+### Important distinction
+
+```text
+Normal User
+    ↓
+No special administrative privileges
+
+Staff User
+    ↓
+Can access Django Admin
+    ↓
+Limited by permissions
+
+Superuser
+    ↓
+Full permissions
+```
+
+---
+
+# 14. Role-Based Access Basics
+
+**Role-Based Access Control (RBAC)** means controlling access based on a user's role.
+
+Instead of thinking:
+
+```text
+Ram can view students
+Ram can add students
+Ram can change students
+```
+
+you define:
+
+```text
+Teacher
+├── View Students
+├── Add Students
+└── Change Students
+```
+
+Then assign Ram to:
+
+```text
+Teacher
+```
+
+### Example roles
+
+```text
+Student
+Teacher
+Manager
+Staff
+Administrator
+```
+
+Each role can have different permissions.
+
+### Example
+
+| Role    | View Students | Add Students | Change Students | Delete Students |
+| ------- | ------------: | -----------: | --------------: | --------------: |
+| Student |           Yes |           No |              No |              No |
+| Teacher |           Yes |          Yes |             Yes |              No |
+| Manager |           Yes |          Yes |             Yes |             Yes |
+| Admin   |           Yes |          Yes |             Yes |             Yes |
+
+---
+
+# 15. Role-Based Access with Django Groups
+
+A simple Django implementation is:
+
+```text
+                 Django User
+                      │
+          ┌───────────┼───────────┐
+          ↓           ↓           ↓
+       Student      Teacher      Manager
+        Group        Group        Group
+          │           │           │
+          ↓           ↓           ↓
+     Permissions  Permissions  Permissions
+```
+
+For example:
+
+```text
+Teacher Group
+│
+├── View Student
+├── Add Student
+└── Change Student
+```
+
+A user assigned to the Teacher group receives those permissions.
+
+---
+
+# 16. Authentication + Authorization Together
+
+A real protected feature usually uses both.
+
+For example, consider a Teacher Dashboard.
+
+### Step 1 — Authentication
+
+First check:
+
+```python
+@login_required
+```
+
+This asks:
+
+> Is the user logged in?
+
+### Step 2 — Authorization
+
+Then check:
+
+```text
+Is the user a Teacher?
+```
+
+or:
+
+```text
+Does the user have the required permission?
+```
+
+### Complete flow
+
+```text
+User requests Teacher Dashboard
+              ↓
+       Authentication
+              ↓
+        Is user logged in?
+          /          \
+        No            Yes
+        ↓              ↓
+      Login       Authorization
+                       ↓
+               Is user a Teacher?
+                  /         \
+                No           Yes
+                ↓             ↓
+              403          Dashboard
+```
+
+---
+
+# 17. Hiding vs Protecting a Page
+
+This is an important security concept.
+
+You might hide a navigation link:
+
+```django
+{% if user|is_teacher %}
+    <a href="{% url 'teacher_dashboard' %}">
+        Teacher Dashboard
+    </a>
+{% endif %}
+```
+
+This improves the user interface.
+
+However, **hiding the link is not security**.
+
+A user could manually enter:
+
+```text
+/accounts/teacher/
+```
+
+Therefore, the view must also perform authorization.
+
+### UI layer
+
+```text
+Show/hide navigation
+```
+
+### Security layer
+
+```text
+View permission/role check
+```
+
+Both should be implemented.
+
+---
+
+# 18. Authentication vs Authorization vs Role
+
+These three concepts should not be confused.
+
+### Authentication
+
+```text
+Who are you?
+```
+
+Example:
+
+```text
+Username + Password
+```
+
+### Authorization
+
+```text
+What are you allowed to do?
+```
+
+Example:
+
+```text
+Can add Student?
+```
+
+### Role
+
+```text
+What category of user are you?
+```
+
+Example:
+
+```text
+Teacher
+```
+
+A role can be implemented using a Django Group.
+
+---
+
+# 19. Important Django Components
+
+| Component                | Purpose                             |
+| ------------------------ | ----------------------------------- |
+| `User`                   | Stores user information             |
+| `UserCreationForm`       | Helps create users                  |
+| `authenticate()`         | Verifies credentials                |
+| `login()`                | Creates an authenticated session    |
+| `logout()`               | Logs the user out                   |
+| Password hashing         | Securely stores passwords           |
+| Sessions                 | Maintains login state               |
+| AuthenticationMiddleware | Makes `request.user` available      |
+| `login_required`         | Protects views from anonymous users |
+| Permissions              | Define allowed actions              |
+| Groups                   | Organize users and permissions      |
+| `is_staff`               | Allows admin access                 |
+| `is_superuser`           | Gives all permissions               |
+
+---
+
+# 20. Typical Django Authentication Architecture
+
+```text
+                         Django Authentication
+                                  │
+              ┌───────────────────┼───────────────────┐
+              │                   │                   │
+              ↓                   ↓                   ↓
+            User               Sessions          Passwords
+              │                   │                   │
+              ↓                   ↓                   ↓
+        Authentication      Authentication       Password
+              │              Middleware           Hashing
+              │                   │
+              └───────────────────┼───────────────────┘
+                                  ↓
+                            request.user
+                                  │
+                                  ↓
+                         Authorization Layer
+                                  │
+                  ┌───────────────┼───────────────┐
+                  ↓               ↓               ↓
+             Permissions       Groups         Superuser
+                  │               │
+                  └───────────────┼───────────────┘
+                                  ↓
+                              View Access
+```
+
+---
+
+# 21. Example: Teacher Dashboard
+
+Suppose the application has:
+
+```text
+Teacher Group
+├── View Students
+├── Add Students
+└── Change Students
+```
+
+A user called `ram` belongs to the Teacher group.
+
+The request flow is:
+
+```text
+Ram logs in
+    ↓
+authenticate()
+    ↓
+login()
+    ↓
+Session created
+    ↓
+AuthenticationMiddleware
+    ↓
+request.user = ram
+    ↓
+@login_required
+    ↓
+User authenticated
+    ↓
+Check Teacher group
+    ↓
+Teacher = True
+    ↓
+Teacher Dashboard
+```
+
+If another user is not a Teacher:
+
+```text
+Normal User
+    ↓
+Authenticated
+    ↓
+Teacher check
+    ↓
+False
+    ↓
+403 Forbidden
+```
+
+---
+
+# 22. Key Takeaways
+
+### Authentication
+
+> Verifies the identity of a user.
+
+### Authorization
+
+> Determines what an authenticated user is allowed to do.
+
+### User
+
+> Represents an account in Django's authentication system.
+
+### Password hashing
+
+> Protects stored passwords by storing hashes instead of plain-text passwords.
+
+### Sessions
+
+> Allow Django to remember that a user is authenticated across requests.
+
+### Authentication Middleware
+
+> Makes the authenticated user available through `request.user`.
+
+### `login_required`
+
+> Prevents unauthenticated users from accessing protected views.
+
+### Permissions
+
+> Define specific actions a user can perform.
+
+### Groups
+
+> Organize users and permissions and can be used to represent roles.
+
+### Staff
+
+> Users allowed to access Django Admin, subject to permissions.
+
+### Superuser
+
+> A user with full permissions.
+
+### Role-Based Access Control
+
+> Controls access by assigning users to roles/groups with appropriate permissions.
+
+---
+
+# Class 7 Practical Flow
+
+For the practical portion of the class, the students can build:
+
+```text
+Student Management System
+│
+├── Registration
+│
+├── Login
+│
+├── Logout
+│
+├── Profile
+│
+├── Teacher Group
+│   └── Teacher Dashboard
+│
+├── Staff User
+│   └── Django Admin
+│
+└── Superuser
+    └── Full administrative access
+```
+
+The complete exercise demonstrates:
+
+```text
+User Registration
+       ↓
+Login
+       ↓
+Session
+       ↓
+request.user
+       ↓
+Groups / Permissions
+       ↓
+Role-based authorization
+       ↓
+Protected Teacher Dashboard
+```
