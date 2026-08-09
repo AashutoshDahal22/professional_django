@@ -1,0 +1,135 @@
+{% load static %} {% load role_tags %}
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>{% block title %} Student Management {% endblock %}</title>
+
+    <!-- Bootstrap -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+  </head>
+
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <div class="container">
+        <!-- Brand -->
+        <a class="navbar-brand" href="/"> Student Management </a>
+
+        <!-- Mobile button -->
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <!-- Left side -->
+          <div class="navbar-nav">
+            <a class="nav-link" href="/"> Home </a>
+
+            <a class="nav-link" href="/about/"> About </a>
+
+            <a class="nav-link" href="/student/"> Student </a>
+
+            <a class="nav-link" href="/contact/"> Contact </a>
+          </div>
+
+          <!-- Right side -->
+          <div class="navbar-nav ms-auto">
+            {% if user.is_authenticated %}
+
+            <!-- Logged-in user -->
+
+            <span class="nav-link text-white">
+              Welcome, {{ user.username }}
+            </span>
+
+            <!-- Profile -->
+
+            <a class="nav-link" href="{% url 'profile' %}"> Profile </a>
+
+            <!-- Teacher -->
+
+            {% if user|is_teacher %}
+
+            <a class="nav-link" href="{% url 'teacher_dashboard' %}">
+              Teacher Dashboard
+            </a>
+
+            {% endif %}
+
+            <!-- Staff -->
+
+            {% if user.is_staff %}
+
+            <a class="nav-link" href="/admin/"> Admin </a>
+
+            {% endif %}
+
+            <!-- Superuser -->
+
+            {% if user.is_superuser %}
+
+            <span class="nav-link text-warning"> Superuser </span>
+
+            {% endif %}
+
+            <!-- Logout -->
+
+            <form method="POST" action="{% url 'logout' %}" class="d-inline">
+              {% csrf_token %}
+
+              <button type="submit" class="btn btn-link nav-link">
+                Logout
+              </button>
+            </form>
+
+            {% else %}
+
+            <!-- Not logged in -->
+
+            <a class="nav-link" href="{% url 'login' %}"> Login </a>
+
+            <a class="nav-link" href="{% url 'register' %}"> Register </a>
+
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+
+    <div class="container mt-5">{% block content %} {% endblock %}</div>
+
+    <!-- Footer -->
+
+    <footer class="bg-dark text-white text-center mt-5 p-3">
+      © 2026 Student Management System
+    </footer>
+
+    <!-- Bootstrap JS -->
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Custom JS -->
+
+    <!--
+<script src="{% static 'js/script.js' %}"></script>
+-->
+  </body>
+</html>
+```

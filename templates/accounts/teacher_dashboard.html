@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %}
+Teacher Dashboard
+{% endblock %}
+
+{% block content %}
+
+<h1>Teacher Dashboard</h1>
+
+<p>
+    Welcome, {{ user.username }}
+</p>
+
+<p>
+    Only users in the Teacher group can access this page.
+</p>
+
+{% endblock %}

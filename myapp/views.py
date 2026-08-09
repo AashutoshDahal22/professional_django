@@ -1,3 +1,4 @@
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 
 from .forms import ContactForm
@@ -54,12 +55,29 @@ def contact(request):
     return render(request, "contact.html", {"form": form})
 
 
+@login_required
 def student(request):
 
-    data = Students.objects.all()  # fetches all students
+    # Normal query
+    # Fetches students first.
+    students = Students.objects.all()
 
-    # select related usage
-    # this fetches the students data with the course data such that we don't have to go back and forth between the student and the course table
-    # students = Students.objects.select_related("course")
+    # select_related()
+    # Suitable for ForeignKey relationships.
+    # Student + Course are fetched using a SQL JOIN.
+    # students_select = Students.objects.select_related("course")
 
-    return render(request, "students.html", {"students": data})
+    # prefetch_related()
+    # Django performs separate queries and joins the
+    # results in Python.
+    # students_prefetch = Students.objects.prefetch_related("course")
+
+    return render(
+        request,
+        "students.html",
+        {
+            "students": students,
+            # "students_select": students_select,
+            # "students_prefetch": students_prefetch,
+        },
+    )
