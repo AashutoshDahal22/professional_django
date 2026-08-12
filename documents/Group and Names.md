@@ -6,7 +6,7 @@ Group 1
 - John Rai
 
 Group 2
-- Jeshica Karki
+- Jeshica Thapa
 - Purnima Shrestha
 - Shiva thapa
 - Surakhshya
@@ -26,7 +26,7 @@ Group 4
 
 Group 5
 - Rajesh
-- NIshan
+- Nishan
 - Prajal
 
 Group 6
@@ -34,30 +34,28 @@ Group 6
 - Samraj
 - Sikhar
 - Rishab
-- Abhish
+- Habhish
 
 Group 7
 - Dipesh
 - Aaryan
 - Sandip
-
-Group 8
 - Amulya
 - Hariom
-- Badri
 
-Group 9
+Group 8
 - Sanjana
 - Biraj
 - Anil
 
-Group 10
+Group 9
 - Sushant
 - Nishesh
 - Rythm
 - Samir
+- Badri
 
-Group 11
+Group 10
 - Prishu
 - Rajsabi
 - Jeshika
